@@ -1,0 +1,14 @@
+{
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:mjshuff23/discord-bot.git",
+  "author": "Michael Shuff <mjshuff23@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.24.0"
+  }
+}
