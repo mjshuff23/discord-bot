@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  bot:
+    container_name: discord-bot
+    image: discord-bot/v1
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    volumes:
+      - .:/app 
