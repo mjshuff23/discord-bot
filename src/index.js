@@ -1,9 +1,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 // Require the necessary discord.js classes
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
 
 require('dotenv').config();
+
+const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -20,13 +22,28 @@ const commandFiles = fs
 
 // Loop over the command files and add them to the Collection
 console.log('Setting up commands...');
+const commands = [];
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file);
   const command = require(filePath);
   // Set a new item in the Collection
   // With the key as the command name and the value as the exported module
   client.commands.set(command.data.name, command);
+  commands.push(command.data.toJSON());
 }
+
+(async () => {
+  try {
+      await rest.put(
+        Routes.applicationCommands(process.env.BOT_ID),
+        { body: commands },
+      );
+
+      console.log('Successfully reloaded global application (/) commands.');
+  } catch (e) {
+    console.error(e);
+  }
+})();
 
 ////////////////////////////// EVENTS /////////////////////////////////////
 const eventsPath = path.join(__dirname, 'events');
