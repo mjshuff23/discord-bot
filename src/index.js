@@ -7,12 +7,16 @@ require('dotenv').config();
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+////////////////////////////// COMMANDS /////////////////////////////////////
 // Create a new Collection (extended Map) for commands
 client.commands = new Collection();
 
 // Read the commands directory and add all the commands to the Collection
 const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
+const commandFiles = fs
+  .readdirSync(commandsPath)
+  .filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
 
 // Loop over the command files and add them to the Collection
 for (const file of commandFiles) {
@@ -23,23 +27,20 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-// When the client is ready, run this code (only once)
-client.once('ready', () => console.log('Ready!'));
+////////////////////////////// EVENTS /////////////////////////////////////
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
 
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isChatInputCommand()) return;
+for (const file of eventFiles) {
+  const filePath = path.join(eventsPath, file);
+  const event = require(filePath);
 
-  const command = client.commands.get(interaction.commandName);
-
-  if (!command) return;
-
- try {
-  await command.execute(interaction);
- } catch (e) {
-  console.error(e);
-  await interaction.reply({ content: `There was an error when executing ${interaction.commandName}`, ephemeral: true });
- }
-});
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args, client));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args, client));
+  }
+}
 
 // Login to Discord with your client's token
 client.login(process.env.TOKEN);
