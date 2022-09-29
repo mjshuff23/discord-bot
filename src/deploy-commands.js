@@ -21,7 +21,7 @@ const rest = new REST({ version: '10' }).setToken(token);
 
 async function addCommands() {
   try {
-    if (location === 'global') {
+    if (location == 'global') {
       console.log('Started refreshing global application (/) commands.');
 
       await rest.put(
