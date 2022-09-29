@@ -10,4 +10,4 @@ services:
       dockerfile: Dockerfile
       target: base
     volumes:
-      - .:/app 
+      - .:/src 
