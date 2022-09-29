@@ -19,6 +19,7 @@ const commandFiles = fs
   .filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
 
 // Loop over the command files and add them to the Collection
+console.log('Setting up commands...');
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file);
   const command = require(filePath);
